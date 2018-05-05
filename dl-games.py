@@ -69,10 +69,11 @@ def parseGameLink(gameDownloadDoc):
     return downloadLink, size
 
 
-def saveGame(directUrl, fileName):
+def saveGame(directUrl):
     setHttp = {'epdprefs': 'ephttpdownload'}
     r = requests.get(directUrl, stream=True, headers=headers, cookies=setHttp)
     totalSize = int(r.headers.get('content-length', 0)) / (32 * 1024.0)
+    fileName = r.url.split('/')[-1]
     with open(fileName, 'wb') as f:
         with tqdm(total=totalSize, unit='B', unit_scale=True,
                   unit_divisor=1024) as pbar:
@@ -86,23 +87,48 @@ def menu():
     print '[+] Here is the list of currently supported platforms'
     for index, name in enumerate(platformDict):
         print '[{}] {}'.format(index, name)
-    console = int(raw_input('Enter a console number '))
+    console = int(raw_input('Enter a console number: '))
     consoleId = platformDict[platformDict.keys()[console]]
     print '[+] OK! Now type the game you wanna search for'
-    game = raw_input('Enter the game name ')
+    game = raw_input('Enter the game name: ')
     return consoleId, game
 
 
-# html = getGameDownloadPage(
-#     'https://www.emuparadise.me/Sony_Playstation_2_ISOs/God_of_War_II_(USA)/150564')
-# print parseGameLink(html)
-# test = parseLinks(parseSearchHtml(makeSearchQuery('god of war')))
-# for i in test:
-#     print i
-#     print test[i]
-# saveGame('http://direct.emuparadise.me/roms/get-download.php?gid=155970&token=0caea31b98099f308b6c2c8838879dc0&mirror_available=true', 'test')
-
 if __name__ == '__main__':
-    conId, game = menu()
-    searchRes = makeSearchQuery(game, sect=conId)
-    print parseSearchHtml(searchRes)
+    conId, gameQuery = menu()
+    queryResult = makeSearchQuery(gameQuery, sect=conId)
+    if not queryResult:
+        print '[!] Server Error! Try again later!'
+        exit(1)
+
+    searchResult = parseSearchHtml(queryResult)
+    if len(searchResult) == 0:
+        print '[!] No Such game!'
+        exit(1)
+
+    gamesDict = parseLinks(searchResult)
+    for idx, game in enumerate(gamesDict):
+        print '[{}] {}'.format(idx, game)
+
+    print '[+] Which of these games u want to download?'
+    gameNum = int(raw_input('Enter the game number: '))
+    gameName = gamesDict.keys()[gameNum]
+    href = gamesDict[gameName]
+    gameDownloadUrl = domain + href
+
+    gamePageHtml = getGameDownloadPage(gameDownloadUrl)
+    if not gamePageHtml:
+        print '[!] Server Error! Try again later!'
+        exit(1)
+    gameDownloadLink, gameSize = parseGameLink(gamePageHtml)
+
+    print '[*] Your game {} is {} big'.format(gameName, gameSize.split()[2])
+    prompt = raw_input('Do you really want o download it? [y/n] ').lower()[0]
+    gameDownloadLink = direct + gameDownloadLink
+    if prompt != 'y':
+        print '[!] ok bye :('
+        print '[*] Heres the download link, you can use another program now'
+        print gameDownloadLink
+        exit(1)
+    print '[+] OK! Please wait while your game is downloading!'
+    saveGame(gameDownloadLink)
