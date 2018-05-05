@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import requests
-from tqdm import tqdm
-tqdm.monitor_interval = 2
+import colorama as col
+from tqdm import tqdm, TqdmSynchronisationWarning
+import warnings
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -9,8 +10,12 @@ except ImportError:
 
 domain = 'https://www.emuparadise.me'
 direct = 'http://direct.emuparadise.me'
-url = 'https://www.emuparadise.me/roms/search.php'
-
+searchUrl = 'https://www.emuparadise.me/roms/search.php'
+yBr = col.Style.BRIGHT + col.Fore.YELLOW
+gBr = col.Style.BRIGHT + col.Fore.GREEN
+wBr = col.Style.BRIGHT + col.Fore.WHITE
+rBr = col.Style.BRIGHT + col.Fore.RED
+cRes = col.Style.RESET_ALL
 platformDict = dict(PS2=41, PSP=44)
 
 # bypass bot protections
@@ -27,7 +32,15 @@ payload = {
 }
 
 
-def makeSearchQuery(searchTerm, url=url, sect=0):
+def hideWarnings(func):
+    def wrapper(directUrl):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", TqdmSynchronisationWarning)
+            return func(directUrl)
+    return wrapper
+
+
+def makeSearchQuery(searchTerm, url=searchUrl, sect=0):
     payload['query'] = searchTerm
     payload['sysid'] = sect
     r = requests.get(url, headers=headers, params=payload)
@@ -69,6 +82,7 @@ def parseGameLink(gameDownloadDoc):
     return downloadLink, size
 
 
+@hideWarnings
 def saveGame(directUrl):
     setHttp = {'epdprefs': 'ephttpdownload'}
     r = requests.get(directUrl, stream=True, headers=headers, cookies=setHttp)
@@ -83,52 +97,70 @@ def saveGame(directUrl):
 
 
 def menu():
-    print '[+] Welcome to EmuParadise Downloader!'
-    print '[+] Here is the list of currently supported platforms'
+    print yBr + '[+] Welcome to EmuParadise Downloader!'
+    print '[+] Here is the list of currently supported platforms' + cRes
+    print '-' * 53 + gBr
     for index, name in enumerate(platformDict):
         print '[{}] {}'.format(index, name)
-    console = int(raw_input('Enter a console number: '))
+    print cRes + '-' * 53
+    console = int(raw_input(wBr + 'Enter a console number: '))
     consoleId = platformDict[platformDict.keys()[console]]
-    print '[+] OK! Now type the game you wanna search for'
-    game = raw_input('Enter the game name: ')
+    print yBr + '[+] OK! Now type the game you wanna search for'
+    game = raw_input((wBr + 'Enter the game name: '))
     return consoleId, game
 
 
-if __name__ == '__main__':
-    conId, gameQuery = menu()
+def main():
+
+    try:
+        conId, gameQuery = menu()
+    except IndexError:
+        print rBr + '[!] No such console!' + cRes
+        exit(1)
+
     queryResult = makeSearchQuery(gameQuery, sect=conId)
     if not queryResult:
-        print '[!] Server Error! Try again later!'
+        print rBr + '[!] Server Error! Try again later!' + cRes
         exit(1)
 
     searchResult = parseSearchHtml(queryResult)
     if len(searchResult) == 0:
-        print '[!] No Such game!'
+        print rBr + '[!] No Such game!' + cRes
         exit(1)
 
     gamesDict = parseLinks(searchResult)
+    print cRes + '-' * 53 + gBr
     for idx, game in enumerate(gamesDict):
         print '[{}] {}'.format(idx, game)
 
-    print '[+] Which of these games u want to download?'
-    gameNum = int(raw_input('Enter the game number: '))
+    print cRes + '-' * 53
+    print yBr + '[+] Which of these games u want to download?'
+    gameNum = int(raw_input(wBr + 'Enter the game number: '))
     gameName = gamesDict.keys()[gameNum]
     href = gamesDict[gameName]
     gameDownloadUrl = domain + href
 
     gamePageHtml = getGameDownloadPage(gameDownloadUrl)
     if not gamePageHtml:
-        print '[!] Server Error! Try again later!'
+        print rBr + '[!] Server Error! Try again later!' + cRes
         exit(1)
     gameDownloadLink, gameSize = parseGameLink(gamePageHtml)
-
-    print '[*] Your game {} is {} big'.format(gameName, gameSize.split()[2])
-    prompt = raw_input('Do you really want o download it? [y/n] ').lower()[0]
+    gameSize = gameSize.split()[2]
+    print yBr + '[*] Your game {} is {} big'.format(gameName, gameSize)
+    prompt = raw_input(wBr + 'Do you really want o download it? [y/n] ')
     gameDownloadLink = direct + gameDownloadLink
-    if prompt != 'y':
-        print '[!] ok bye :('
-        print '[*] Heres the download link, you can use another program now'
-        print gameDownloadLink
+    if prompt.lower()[0] != 'y':
+        print wBr + '[*] Heres the download link, you can use another program'
+        print gameDownloadLink + cRes
         exit(1)
-    print '[+] OK! Please wait while your game is downloading!'
+    print yBr + '[+] OK! Please wait while your game is downloading!' + cRes
     saveGame(gameDownloadLink)
+
+
+if __name__ == '__main__':
+    col.init()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print rBr + '\n[!] Exiting...'
+    col.deinit()
