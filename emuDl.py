@@ -134,7 +134,7 @@ def main():
         print '[{}] {}'.format(idx, game)
 
     print cRes + '-' * 53
-    print yBr + '[+] Which of these games u want to download?'
+    print yBr + '[+] Which of these games you want to download?'
     gameNum = int(raw_input(wBr + 'Enter the game number: '))
     gameName = gamesDict.keys()[gameNum]
     href = gamesDict[gameName]
@@ -155,6 +155,7 @@ def main():
         exit(1)
     print yBr + '[+] OK! Please wait while your game is downloading!' + cRes
     saveGame(gameDownloadLink)
+    print yBr + '[+] Game Downloaded! Have Fun!' + cRes
 
 
 if __name__ == '__main__':
