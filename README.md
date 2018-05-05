@@ -5,7 +5,7 @@
 This script is a web scrapper of the emuparadise.me website which aims to make
 the process of downloading a game as simple as possible.
 
-![alt text](https://imgur.com/a/VXzKQR7 "Example")
+![Imgur](https://i.imgur.com/mO9u8gl.png "Example")
 
 ***
 ## Installation
@@ -14,7 +14,6 @@ the process of downloading a game as simple as possible.
 
 ```
 pip install requests colorama tqdm beautifulsoup4
-
 ```
 ### Windows
 Coming soon
