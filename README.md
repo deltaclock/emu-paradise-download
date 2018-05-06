@@ -29,5 +29,5 @@ Coming soon
 - [ ] Windows executable
 - [x] Game size
 - [x] Game Image? some games dont have one
-- [ ] Happy Hour
+- [x] Happy Hour
 - [ ] Threads

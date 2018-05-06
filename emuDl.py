@@ -80,8 +80,8 @@ def getGameDownloadPage(gameUrl):
 
 
 # returns the game href link and the game size
-def parseGameLink(gameDownloadDoc):
-    soup = BeautifulSoup(gameDownloadDoc, 'html.parser')
+def parseGameLink(gameDownloadPage):
+    soup = BeautifulSoup(gameDownloadPage, 'html.parser')
     downloadLink = soup('a', attrs={"id": "download-link"})
     size = soup('font', attrs={"style": "font-size: 16px"})
 
@@ -89,6 +89,12 @@ def parseGameLink(gameDownloadDoc):
     size = size[0].contents[0].strip(' - ').split()[2]  # xxxMB
 
     return downloadLink, size
+
+
+def isHappyHour(gameDownloadPage):
+    soup = BeautifulSoup(gameDownloadPage, 'html.parser')
+    happy = soup('span', attrs={"id": "happy-hour"})
+    return True if len(happy) != 0 else False
 
 
 # saves the game using http as a download method and tqdm for the download bar
