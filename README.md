@@ -15,17 +15,19 @@ the process of downloading a game as simple as possible.
 ```
 pip install requests colorama tqdm beautifulsoup4
 ```
-### Windows
+### Windows:
 Coming soon
 
-### MacOS
+### MacOS:
 Coming soon
 
 ***
 ### TODO
 
 - [ ] Add more platforms
-- [ ] Locate download server automatically
+- [x] Locate download server automatically
 - [ ] Windows executable
-- [ ] Game size
-- [ ] Game Image?
+- [x] Game size
+- [x] Game Image? some games dont have one
+- [ ] Happy Hour
+- [ ] Threads
