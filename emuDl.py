@@ -21,7 +21,14 @@ class c:
 
 
 # all the available platforms, the number is the sysid
-platformList = dict(PS2=41, PSP=44).items()
+platformList = {'ALL': 0, 'PS2': 41,
+                'PSP': 44, 'Nintendo 64': 9,
+                'Nintendo DS': 32, 'NES': 13,
+                'Sony Playstation': 2, 'SNES': 5,
+                'Nintendo Game Boy': 12, 'Nintendo Game Boy Color': 11,
+                'Nintendo Gameboy Advance': 31, 'Nintendo Gamecube': 42,
+                'XBox': 43, 'Nintendo Wii U': 70}
+platformList = platformList.items()  # make it a list of tuples
 
 # bypass bot protections
 headers = {

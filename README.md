@@ -14,9 +14,10 @@ the process of downloading a game as simple as possible.
 
 ```
 pip install requests colorama tqdm beautifulsoup4
+git clone https://github.com/deltaclock/emu-paradise-download.git
 ```
 ### Windows:
-Coming soon
+Packed executable in the project files
 
 ### MacOS:
 Coming soon
@@ -24,9 +25,9 @@ Coming soon
 ***
 ### TODO
 
-- [ ] Add more platforms
+- [x] Add more platforms
 - [x] Locate download server automatically
-- [ ] Windows executable
+- [x] Windows executable
 - [x] Game size
 - [x] Game Image? some games dont have one
 - [x] Happy Hour
