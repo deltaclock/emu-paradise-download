@@ -137,7 +137,7 @@ def menu():
     consoleId = platformList[console][1]
 
     print c.y + '[+] OK! Now type the game you wanna search for'
-    game = raw_input((c.w + 'Enter the game name: '))
+    game = raw_input(c.w + 'Enter the game name: ')
     return consoleId, game
 
 
@@ -146,10 +146,13 @@ def main():
     try:
         conId, gameQuery = menu()
         # to catch invalid console number
-    except IndexError:
+    except (ValueError, IndexError):
         exit(c.r + '[!] No such console!' + c.res)
 
+    if len(gameQuery) < 2:
+        exit(c.r + '[!] No such game!' + c.res)
     searchHtml = makeSearchQuery(gameQuery, sect=conId)
+
     if not searchHtml:
         exit(c.r + '[!] Server Error! Try again later!' + c.res)
 
@@ -166,9 +169,14 @@ def main():
     print c.res + '-' * 53
     print c.y + '[+] Which of these games you want to download?'
 
-    gameNum = int(raw_input(c.w + 'Enter the game number: '))
-    gameName = gamesList[gameNum][0]
-    href = gamesList[gameNum][1]
+    try:
+        gameNum = int(raw_input(c.w + 'Enter the game number: '))
+        gameName = gamesList[gameNum][0]
+        href = gamesList[gameNum][1]
+        # to catch invalid game number
+    except (ValueError, IndexError):
+        exit(c.r + '[!] No such game!' + c.res)
+
     gameMainUrl = 'https://www.emuparadise.me' + href
 
     # get the game download page html
