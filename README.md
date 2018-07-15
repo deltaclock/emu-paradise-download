@@ -5,7 +5,7 @@
 This script is a web scrapper of the emuparadise.me website which aims to make
 the process of downloading a game as simple as possible.
 
-![Imgur](https://i.imgur.com/mO9u8gl.png "Example")
+![Imgur](https://i.imgur.com/gq1P4a8.png "Example")
 
 ***
 ## Installation
@@ -31,4 +31,4 @@ Coming soon
 - [x] Game size
 - [x] Game Image? some games dont have one
 - [x] Happy Hour
-- [ ] Threads
+- [x] Threads

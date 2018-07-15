@@ -16,7 +16,7 @@ class c:
     # class for all the colors we will use
     y = colorama.Style.BRIGHT + colorama.Fore.YELLOW
     g = colorama.Style.BRIGHT + colorama.Fore.GREEN
-    o = colorama.Style.BRIGHT + colorama.Fore.ORANGE
+    o = colorama.Style.BRIGHT + colorama.Fore.MAGENTA
     w = colorama.Style.BRIGHT + colorama.Fore.WHITE
     r = colorama.Style.BRIGHT + colorama.Fore.RED
     res = colorama.Style.RESET_ALL
@@ -206,7 +206,7 @@ if __name__ == '__main__':
         if isHappyHour():
             gameDlUrl = main()
             threading.Thread(target=saveGame, args=(gameDlUrl,)).start()
-            print c.o + '[+] Its Happy Hour! You can download a second game!'
+            print c.m + '[+] Its Happy Hour! You can download a second game!'
             gameDlUrl = main()
             threading.Thread(target=saveGame, args=(gameDlUrl,)).start()
         else:
