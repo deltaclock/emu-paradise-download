@@ -4,6 +4,7 @@ from sys import exit
 try:
     import requests
     import colorama
+    import threading
     from tqdm import tqdm, TqdmSynchronisationWarning
     from bs4 import BeautifulSoup
 except ImportError as e:
@@ -15,6 +16,7 @@ class c:
     # class for all the colors we will use
     y = colorama.Style.BRIGHT + colorama.Fore.YELLOW
     g = colorama.Style.BRIGHT + colorama.Fore.GREEN
+    o = colorama.Style.BRIGHT + colorama.Fore.ORANGE
     w = colorama.Style.BRIGHT + colorama.Fore.WHITE
     r = colorama.Style.BRIGHT + colorama.Fore.RED
     res = colorama.Style.RESET_ALL
@@ -34,6 +36,7 @@ platformList = platformList.items()  # make it a list of tuples
 headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:59.0) \
      Gecko/20100101 Firefox/59.0',
+    'DNT': '1',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
 }
 
@@ -47,7 +50,7 @@ def hideWarnings(func):
     return wrapper
 
 
-# makes a search for the game using in the specified platform(sysid)
+# makes a search for the game using the specified platform (sysid)
 def makeSearchQuery(searchTerm, sect=0):
     url = 'https://www.emuparadise.me/roms/search.php'
     searchParams = dict(query=searchTerm, section='roms', sysid=sect)
@@ -98,10 +101,10 @@ def parseGameLink(gameDownloadPage):
     return downloadLink, size
 
 
-def isHappyHour(gameDownloadPage):
-    soup = BeautifulSoup(gameDownloadPage, 'html.parser')
-    happy = soup('span', attrs={"id": "happy-hour"})
-    return True if len(happy) != 0 else False
+def isHappyHour():
+    happy_hour_url = 'https://www.emuparadise.me/happy_hour.php'
+    r = requests.get(happy_hour_url)
+    return False if 'var is_high_load' in r.text else True
 
 
 # saves the game using http as a download method and tqdm for the download bar
@@ -124,8 +127,7 @@ def saveGame(directUrl):
 
 # return user platform and game choice
 def menu():
-    print c.y + '[+] Welcome to EmuParadise Downloader!'
-    print '[+] Here is the list of currently supported platforms' + c.res
+    print c.y + '[+] Here is the list of currently supported platforms' + c.res
     print '-' * 53 + c.g
 
     # print a list of the available platforms
@@ -142,7 +144,6 @@ def menu():
 
 
 def main():
-
     try:
         conId, gameQuery = menu()
         # to catch invalid console number
@@ -188,22 +189,31 @@ def main():
     gameDownloadLink, gameSize = parseGameLink(gamePageHtml)
     print c.y + '[*] Your game {} is {} big'.format(gameName, gameSize)
 
-    prompt = raw_input(c.w + 'Do you really want o download it? [y/n] ')
+    prompt = raw_input(c.w + 'Do you really want to download it? [y/n] ')
     if prompt.lower()[0] != 'y':
         print c.w + '[*] Heres the download link, you can use another program'
         exit(gameDownloadLink + c.res)
 
     # user pressed yes, download the game
     print c.y + '[+] OK! Please wait while your game is downloading!' + c.res
-    saveGame(gameDownloadLink)
-    print c.y + '[+] Game Downloaded! Have Fun!' + c.res
+    return gameDownloadLink
 
 
 if __name__ == '__main__':
     colorama.init()
     try:
-        main()
-    except KeyboardInterrupt, EOFError:
+        print c.y + '[+] Welcome to EmuParadise Downloader!' + c.res
+        if isHappyHour():
+            gameDlUrl = main()
+            threading.Thread(target=saveGame, args=(gameDlUrl,)).start()
+            print c.o + '[+] Its Happy Hour! You can download a second game!'
+            gameDlUrl = main()
+            threading.Thread(target=saveGame, args=(gameDlUrl,)).start()
+        else:
+            gameDlUrl = main()
+            saveGame(gameDlUrl)
+            print c.y + '[+] Game Downloaded! Have Fun!' + c.res
+    except (KeyboardInterrupt, EOFError):
         print c.r + '\n[!] Exiting...'
     finally:
         colorama.deinit()
