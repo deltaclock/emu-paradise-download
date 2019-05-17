@@ -13,8 +13,8 @@ the process of downloading a game as simple as possible.
 ### Linux:
 
 ```
-pip install requests colorama tqdm beautifulsoup4
 git clone https://github.com/deltaclock/emu-paradise-download.git
+pip install -r requirements.txt
 ```
 ### Windows:
 Packed executable in the project files
