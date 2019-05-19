@@ -15,12 +15,15 @@ the process of downloading a game as simple as possible.
 ```
 git clone https://github.com/deltaclock/emu-paradise-download.git
 pip install -r requirements.txt
+<<<<<<< HEAD
 
 OR
 
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+=======
+>>>>>>> e2aace427838eac469d0d64b40f148e9a794df5b
 ```
 ### Windows:
 OUTDATED ---- Packed executable in the project files
