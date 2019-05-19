@@ -5,7 +5,7 @@
 This script is a web scrapper of the emuparadise.me website which aims to make
 the process of downloading a game as simple as possible.
 
-![Imgur](https://i.imgur.com/gq1P4a8.png "Example")
+![Imgur](https://imgur.com/E0IUwJ5.png "Example")
 
 ***
 ## Installation
@@ -13,11 +13,17 @@ the process of downloading a game as simple as possible.
 ### Linux:
 
 ```
-pip install requests colorama tqdm beautifulsoup4
 git clone https://github.com/deltaclock/emu-paradise-download.git
+pip install -r requirements.txt
+
+OR
+
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 ### Windows:
-Packed executable in the project files
+OUTDATED ---- Packed executable in the project files
 
 ### MacOS:
 Coming soon

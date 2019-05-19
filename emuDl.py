@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import re
 import warnings
-from os import path
 from sys import exit
+from os import path, makedirs
+from urllib.parse import unquote
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor, as_completed
 try:
@@ -230,8 +231,6 @@ class GameDownloader:
     @hide_warnings
     def __save_file(self, direct_url, folder):
         '''Saves the game using http as a download method and tqdm for the download bar'''
-        # if not isinstance(game_file, GameFile):
-        #     raise TypeError('This method needs a GameFile object.')
         # start a http byte stream
         set_http = {'epdprefs': 'ephttpdownload'}
         r = requests.get(direct_url, stream=True,
@@ -239,7 +238,7 @@ class GameDownloader:
         # get game size and game name + extension
         total_size = int(r.headers.get('content-length', 0)) / (32 * 1024.0)
         file_name = r.url.split('/')[-1]
-        file_name = path.join(folder, file_name)
+        file_name = path.join(folder, unquote(file_name))
         # save the file 4096 bytes at a time while updating the progress bar
         with open(file_name, 'wb') as f:
             with tqdm(total=total_size, unit='B', unit_scale=True,
@@ -251,6 +250,7 @@ class GameDownloader:
     def save_game_files(self, file_indexes, folder='Games'):
         '''Save the game files with the specified indexes'''
         files_folder = path.join(folder, self.console_name, self.game_folder)
+        makedirs(files_folder, exist_ok=True)
         futures_to_files = dict()
         # the site only allows 2 concurrent downloads
         with ThreadPoolExecutor(max_workers=2) as executor:
@@ -355,9 +355,8 @@ def main():
         red_exit('[!] Not a number!')
     except IndexError:
         file_nums = list(range(len(game_files)))
-    print(file_nums)
     prompt = input(
-        Colors.white + 'Do you really want to download them? [y/n] ')
+        Colors.purple + 'Do you really want to download them? [y/n] ')
     if prompt.lower()[0] != 'y':
         red_exit('[!] Bye..')
 
@@ -365,7 +364,7 @@ def main():
     print(Colors.yellow +
           '[+] OK! Please wait while your game is downloading!' + Colors.reset)
     for downloaded_file in downloader.save_game_files(file_nums):
-        print(downloaded_file.title + Colors.green + Symbols.check)
+        print(f'{downloaded_file.title}: ' + Colors.green + Symbols.check + Colors.reset)
 
 
 if __name__ == '__main__':
