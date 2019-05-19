@@ -33,6 +33,6 @@ Coming soon
 
 - [x] Add more platforms
 - [x] Locate download server automatically
-- [] Windows executable
+- [ ] Windows executable
 - [x] Game size
 - [x] Threads
