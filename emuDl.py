@@ -78,7 +78,8 @@ PLATFORM_LIST = [
     ('Nintendo Gamecube', 42),
     ('XBox', 43),
     ('Nintendo Wii U', 70),
-    ('Sega Dreamcast', 1)
+    ('Sega Dreamcast', 1),
+    ('PSX for PSP', 67)
 ]
 
 # bypass bot protections
