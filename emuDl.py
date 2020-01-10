@@ -60,7 +60,6 @@ class ServerError(Exception):
     pass
 
 
-
 # all the available platforms, the number is the sysid
 PLATFORM_LIST = [
     ('ALL', 0),
@@ -107,7 +106,7 @@ def hide_warnings(func):
     '''Wrapper to supress tqdm warnings'''
     def wrapper(*args, **kwargs):
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", TqdmSynchronisationWarning)
+            warnings.simplefilter('ignore', TqdmSynchronisationWarning)
             return func(*args, **kwargs)
     return wrapper
 
@@ -123,10 +122,13 @@ class GameSearcher:
         return self._games_links
 
     def search(self):
-        """Makes a search for the game using the specified platform (sysid)"""
+        '''Makes a search for the game using the specified platform (sysid)'''
         url = DOMAIN + '/roms/search.php'
-        search_params = dict(query=self.search_term,
-                             section='roms', sysid=self.console_id)
+        search_params = dict(
+            query=self.search_term,
+            section='roms',
+            sysid=self.console_id
+        )
         r = requests.get(url, headers=HEADERS, params=search_params)
 
         if r.status_code != 200:
@@ -152,6 +154,7 @@ class GameDownloader:
     def __init__(self, game_obj):
         if not isinstance(game_obj, Game):
             raise TypeError('This class needs a Game instance.')
+
         self.game = game_obj
         url_parts = game_obj.url.split('/')
         self.game_gid = url_parts[-1]
@@ -165,10 +168,15 @@ class GameDownloader:
         return uri
 
     def __get_url_redirect(self, page='/roms/get-download.php'):
+        '''Get the download server hidden directory'''
         url = DOMAIN + page
         payload = dict(gid=self.game_gid, test='true')
-        r = requests.head(url, params=payload, headers=HEADERS,
-                          allow_redirects=False)
+        r = requests.head(
+            url,
+            params=payload,
+            headers=HEADERS,
+            allow_redirects=False
+        )
         url = r.headers.get('Location')
         if r.status_code != 301:
             raise ServerError(f'Server returned {r.status_code} at redirect.')
@@ -177,12 +185,14 @@ class GameDownloader:
         return url
 
     def __get_url_dreamcast(self, title):
+        '''Specific patch for dreamcast'''
         title_regex = r"Download (.*) ISO"
         url = 'http://50.7.92.186/happyxhJ1ACmlTrxJQpol71nBc/Dreamcast/'
         try:
             url += re.match(title_regex, title).group(1)
-        except Exception:
-            return None
+        except AttributeError:
+            # couldnt match the dreamcast url
+            return False
         return url
 
     def __get_url_fileinfo(self, file_url):
@@ -196,6 +206,7 @@ class GameDownloader:
         '''This method tries to get the direct url for a Game file, on failure returns None'''
         if not isinstance(anchor_tag, Tag):
             raise TypeError('This methods needs an anchor bs4 Tag object.')
+
         href = self.__urlify(anchor_tag.get('href'))
         title = anchor_tag.get('title')
         # try using the href link directly
@@ -223,8 +234,7 @@ class GameDownloader:
         download_div = soup('div', attrs={"class": "download-link"})[0]
         # for each game link
         for anchor in download_div.find_all('a'):
-            file_title = anchor.get_text()
-            file_title = file_title.replace('Download ', '')
+            file_title = anchor.get_text().replace('Download ', '')
             file_url = self.__get_direct_url(anchor)
             _, file_size = self.__get_url_fileinfo(file_url)
             game_file = GameFile(
@@ -242,14 +252,19 @@ class GameDownloader:
         # get game size and game name + extension
         total_size = int(r.headers.get('content-length', 0)) / (32 * 1024.0)
         file_name = r.url.split('/')[-1]
-        file_name = path.join(folder, unquote(file_name))
+        full_path = path.join(folder, unquote(file_name))
         # save the file 4096 bytes at a time while updating the progress bar
-        with open(file_name, 'wb') as f:
-            with tqdm(total=total_size, unit='B', unit_scale=True,
-                      unit_divisor=1024) as pbar:
+        with open(full_path, 'wb') as f:
+            progress_bar = tqdm(
+                total=total_size,
+                unit='B',
+                unit_scale=True,
+                unit_divisor=1024
+            )
+            with progress_bar:
                 for chunk in r.iter_content(chunk_size=4096):
                     f.write(chunk)
-                    pbar.update(len(chunk))
+                    progress_bar.update(len(chunk))
 
     def save_game_files(self, file_indexes, folder='Games'):
         '''Save the game files with the specified indexes'''
@@ -265,18 +280,24 @@ class GameDownloader:
                 except IndexError:
                     raise UserError('Selected file number does not exist.')
                 if not game_file.url:
+                    # game doesnt have a url to download from
                     continue
                 # save the game file
                 fut = executor.submit(
-                    self.__save_file, game_file.url, files_folder)
-                futures_to_files.update({fut: game_file})
+                    self.__save_file,
+                    game_file.url,
+                    files_folder
+                )
+                futures_to_files.update({
+                    fut: game_file
+                })
             for future in as_completed(futures_to_files):
-                # to propagate exceptions
+                # propagate exceptions
                 future.result()
                 file = futures_to_files[future]
                 yield file
 
-
+# MAIN USER MENU
 def menu():
     '''Return user platform and game choice'''
     print(Colors.yellow +
@@ -297,7 +318,7 @@ def menu():
     game = input(Colors.white + 'Enter the game name: ')
     return console_id, game
 
-
+# MAIN LOGIC
 def main():
     try:
         con_id, game_name = menu()
@@ -308,7 +329,6 @@ def main():
         red_exit('[!] No such game!')
 
     searcher = GameSearcher(game_name, con_id=con_id)
-
     try:
         searcher.search()
     except ServerError as e:
@@ -316,7 +336,7 @@ def main():
         red_exit('[!] Server Error! Try again later!')
 
     search_results = searcher.get_games()
-    if len(search_results) == 0:
+    if len(search_results):
         red_exit('[!] No Such game!')
 
     print(Colors.reset + '-' * 53 + Colors.green)
@@ -358,7 +378,7 @@ def main():
     except ValueError:
         red_exit('[!] Not a number!')
     except IndexError:
-        file_nums = list(range(len(game_files)))
+        file_nums = tuple(range(len(game_files)))
     prompt = input(
         Colors.purple + 'Do you really want to download them? [y/n] ')
     if prompt.lower()[0] != 'y':
@@ -368,7 +388,8 @@ def main():
     print(Colors.yellow +
           '[+] OK! Please wait while your game is downloading!' + Colors.reset)
     for downloaded_file in downloader.save_game_files(file_nums):
-        print(f'{downloaded_file.title}: ' + Colors.green + Symbols.check + Colors.reset)
+        print(f'{downloaded_file.title}: ' +
+              Colors.green + Symbols.check + Colors.reset)
 
 
 if __name__ == '__main__':
@@ -377,7 +398,7 @@ if __name__ == '__main__':
         print(Colors.yellow +
               '[+] Welcome to EmuParadise Downloader!' + Colors.reset)
         main()
-        print(Colors.yellow + '[+] Game Downloaded! Have Fun!' + Colors.reset)
+        print(Colors.yellow + '[+] Games Downloaded! Have Fun!' + Colors.reset)
     except (KeyboardInterrupt, EOFError):
         red_exit('\n[!] Exiting...')
     finally:
