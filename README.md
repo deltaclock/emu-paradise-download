@@ -45,6 +45,8 @@ Run the script on a terminal and follow the on screen menu.
 
 Windows users should open cmd or powershell and run the exe found in the releases page.
 
+Note windows cmd cant handle some unicode symbols, its not a bug, just ignore it.
+
 `.\emuDl.exe`
 
 ***
