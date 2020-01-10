@@ -60,7 +60,6 @@ class ServerError(Exception):
     pass
 
 
-DOMAIN = 'https://www.emuparadise.me'
 
 # all the available platforms, the number is the sysid
 PLATFORM_LIST = [
@@ -82,6 +81,8 @@ PLATFORM_LIST = [
     ('PSX for PSP', 67)
 ]
 
+
+DOMAIN = 'https://www.emuparadise.me'
 # bypass bot protections
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:59.0) \
@@ -92,12 +93,14 @@ HEADERS = {
 }
 
 
-def sizeof_fmt(num, suffix='B'):
+def sizeof_fmt(num):
+    '''Format a number of bytes into human readble sizes'''
+    # https://en.wikipedia.org/wiki/Kibibyte
     for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
-            return "%3.1f%s%s" % (num, unit, suffix)
+            return f'{num:3.1f}{unit}B'
         num /= 1024.0
-    return "%.1f%s%s" % (num, 'Yi', suffix)
+    return f'{num:.1f}YiB'
 
 
 def hide_warnings(func):
