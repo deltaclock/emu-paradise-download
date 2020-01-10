@@ -386,8 +386,9 @@ def main():
         red_exit('[!] Not a number!')
     except IndexError:
         file_nums = tuple(range(len(game_files)))
-    prompt = input(
-        Colors.purple + 'Do you really want to download them? [y/n] ')
+    
+    print(Colors.purple, end='')
+    prompt = input('Do you really want to download them? [y/n] ')
     if prompt.lower()[0] != 'y':
         red_exit('[!] Bye..')
 
