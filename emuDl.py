@@ -298,6 +298,8 @@ class GameDownloader:
                 yield file
 
 # MAIN USER MENU
+
+
 def menu():
     '''Return user platform and game choice'''
     print(Colors.yellow +
@@ -319,6 +321,8 @@ def menu():
     return console_id, game
 
 # MAIN LOGIC
+
+
 def main():
     try:
         con_id, game_name = menu()
@@ -336,7 +340,7 @@ def main():
         red_exit('[!] Server Error! Try again later!')
 
     search_results = searcher.get_games()
-    if len(search_results):
+    if not len(search_results):
         red_exit('[!] No Such game!')
 
     print(Colors.reset + '-' * 53 + Colors.green)
@@ -354,6 +358,7 @@ def main():
     print('[*] Please wait..')
     downloader = GameDownloader(download_game)
     game_files = downloader.find_game_files()
+    print(Colors.reset + '-' * 53)
     # print the game files and let the user select
     for idx, file in enumerate(game_files):
         if not file.url:
@@ -363,7 +368,7 @@ def main():
         print(Colors.cyan +
               f'[{idx}] {file.title} - Size: {file.size} - Available: {Colors.green}{Symbols.check}' + Colors.reset)
     print(Colors.green + f'[{idx+1}] ALL')
-
+    print(Colors.reset + '-' * 53)
     print(Colors.yellow +
           '[+] Which of these game files you want to download?')
     try:
