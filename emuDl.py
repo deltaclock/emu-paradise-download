@@ -307,17 +307,18 @@ def menu():
     print('-' * 53 + Colors.green)
     for index, name in enumerate(PLATFORM_LIST):
         print(f'[{index}] {name[0]}')
-    print(Colors.reset + '-' * 53)
+    print(Colors.reset + '-' * 53 + Colors.white)
     try:
-        console = int(input(Colors.white + 'Enter a console number: '))
+        console = int(input('Enter a console number: '))
         console_id = PLATFORM_LIST[console][1]
     except IndexError:
         raise UserError('Selected number is wrong')
     except ValueError:
         raise UserError('Not a valid number')
 
-    print(Colors.yellow + '[+] OK! Now type the game you wanna search for')
-    game = input(Colors.white + 'Enter the game name: ')
+    print(Colors.yellow +
+          '[+] OK! Now type the game you wanna search for' + Colors.white)
+    game = input('Enter the game name: ')
     return console_id, game
 
 # MAIN LOGIC
@@ -349,9 +350,10 @@ def main():
         print(f'[{idx}] {game.title} - Size: {game.size}')
     print(Colors.reset + '-' * 53)
 
-    print(Colors.yellow + '[+] Which of these games you want to download?')
+    print(Colors.yellow +
+          '[+] Which of these games you want to download?' + Colors.white)
     try:
-        game_num = int(input(Colors.white + 'Enter the game number: '))
+        game_num = int(input('Enter the game number: '))
         download_game = search_results[game_num]
     except (ValueError, IndexError):
         red_exit('[!] No such game!')
@@ -370,10 +372,10 @@ def main():
     print(Colors.green + f'[{idx+1}] ALL')
     print(Colors.reset + '-' * 53)
     print(Colors.yellow +
-          '[+] Which of these game files you want to download?')
+          '[+] Which of these game files you want to download?' + Colors.white)
     try:
         nums = input(
-            Colors.white + 'Enter the game file number/s (Comma separated): ').split(',')
+            'Enter the game file number/s (Comma separated): ').split(',')
         file_nums = list()
         for num in set(nums):
             n = int(num)
