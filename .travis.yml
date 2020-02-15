@@ -5,7 +5,7 @@ before_install:
   - choco install python
 
 install:
-  - python3 --version
+  - py --version
   - python3 -m pip install --upgrade pip
   - pip install -r requirements.txt
   - pip install pyinstaller
