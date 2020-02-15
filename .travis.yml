@@ -6,12 +6,12 @@ before_install:
 
 install:
   - py --version
-  - python3 -m pip install --upgrade pip
-  - pip install -r requirements.txt
-  - pip install pyinstaller
+  - py -m pip install --upgrade pip
+  - py -m pip install -r requirements.txt
+  - py -m pip install pyinstaller
 
 script:
-  - pyinstaller --onefile emuDl.py
+  - py -m pyinstaller --onefile emuDl.py
   - ls -la dist/
 
 before_deploy:
