@@ -9,8 +9,6 @@ before_install:
   - choco install python
 
 install:
-  - python --version
-  - python3 --version
   - py --version
   - py -m pip install --upgrade pip
   - py -m pip install -r requirements.txt
