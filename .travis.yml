@@ -1,0 +1,26 @@
+os: windows
+language: shell
+
+before_install: 
+  - choco install python
+
+install:
+  - python -m pip install --upgrade pip
+  - pip install -r requirements.txt
+  - pip install pyinstaller
+
+script:
+  - pyinstaller --onefile emuDl.py
+  - ls -la dist/
+
+before_deploy:
+  - git config --local user.name "deltaclock"
+  - git config --local user.email "24370162+deltaclock@users.noreply.github.com"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  - git tag $TRAVIS_TAG
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file: dist/emuDl.exe
+  skip_cleanup: true
