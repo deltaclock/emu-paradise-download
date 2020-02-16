@@ -10,9 +10,9 @@ before_install:
 
 install:
   - py --version
-  - py -m pip install --upgrade pip
-  - py -m pip install -r requirements.txt
-  - py -m pip install pyinstaller
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+  - pip install pyinstaller
 
 script:
   - pyinstaller --onefile emuDl.py
