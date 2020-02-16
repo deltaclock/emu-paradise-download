@@ -1,5 +1,7 @@
 # Emu-Paradise-Download
 
+[![Build Status](https://travis-ci.com/deltaclock/emu-paradise-download.svg?branch=master)](https://travis-ci.com/deltaclock/emu-paradise-download)
+
 ## Description
 
 This script is a web scrapper of the emuparadise.me website which aims to make
