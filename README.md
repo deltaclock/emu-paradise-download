@@ -30,10 +30,8 @@ pip install -r requirements.txt
 
 ### Windows
 
-There is a high chance the windows binary is outdated.
 Take a look at releases, for the latest build.
-
-(In the future maybe use travis to build a win exe on every change)
+The build there is built automatically and not tested.
 
 ## Usage
 
