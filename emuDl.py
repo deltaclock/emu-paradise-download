@@ -187,7 +187,7 @@ class GameDownloader:
     def __get_url_dreamcast(self, title):
         '''Specific patch for dreamcast'''
         title_regex = r"Download (.*) ISO"
-        url = 'http://50.7.92.186/happyxhJ1ACmlTrxJQpol71nBc/Dreamcast/'
+        url = 'http://50.7.189.186/happyxhJ1ACmlTrxJQpol71nBc/Dreamcast/'
         try:
             url += re.match(title_regex, title).group(1)
         except AttributeError:
